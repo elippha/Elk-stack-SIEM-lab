@@ -66,9 +66,9 @@ We then attack the Ubuntu machine from **Kali Linux** using **Hydra** (SSH brute
 
 ---
 
-## Step 1 — Deploy the ELK Stack with Docker
+## Step 1 Deploy the ELK Stack with Docker
 
-### 1.1 — Update Ubuntu and Install Docker
+### 1.1 Update Ubuntu and Install Docker
 
 SSH into your Ubuntu VM or open a terminal and run the following commands one at a time.
 
@@ -100,7 +100,7 @@ Docker version 24.x.x, build xxxxxxx
 
 ---
 
-### 1.2 — Create the ELK Directory
+### 1.2 Create the ELK Directory
 
 ```bash
 mkdir ~/elk-stack
@@ -109,7 +109,7 @@ cd ~/elk-stack
 
 ---
 
-### 1.3 — Create the Docker Compose File
+### 1.3 Create the Docker Compose File
 
 ```bash
 nano docker-compose.yml
@@ -154,7 +154,7 @@ Save and exit nano:
 
 ---
 
-### 1.4 — Start the ELK Stack
+### 1.4 Start the ELK Stack
 
 ```bash
 sudo docker compose up -d
@@ -175,9 +175,11 @@ xxxxxxxxxxxx   docker.elastic.co/kibana/kibana:8.13.4    Up X minutes   0.0.0.0:
 xxxxxxxxxxxx   docker.elastic.co/elasticsearch/...       Up X minutes   0.0.0.0:9200->9200/tcp
 ```
 
+![Docker containers running](images/docker%20ps.png)
+
 ---
 
-### 1.5 — Verify the Stack is Working
+### 1.5 Verify the Stack is Working
 
 **Access Kibana in your browser:**
 ```
@@ -185,6 +187,8 @@ http://localhost:5601
 ```
 
 You should see the Kibana welcome/home screen.
+
+![Kibana Home Screen](images/kibana.png)
 
 **Test Elasticsearch via curl:**
 ```bash
@@ -206,25 +210,27 @@ Expected JSON response:
 
 ✅ If you can see both — your ELK Stack is live.
 
+![Elasticsearch curl JSON response](images/jsoncurl.png)
+
 ---
 
-## Step 2 — Install & Configure Filebeat
+## Step 2 Install & Configure Filebeat
 
 Filebeat is a lightweight log shipper that runs on the Ubuntu host (outside Docker). It reads system logs and forwards them directly to Elasticsearch.
 
-### 2.1 — Download Filebeat
+### 2.1 Download Filebeat
 
 ```bash
 curl -L -O https://artifacts.elastic.co/downloads/beats/filebeat/filebeat-8.13.4-amd64.deb
 ```
 
-### 2.2 — Install Filebeat
+### 2.2 Install Filebeat
 
 ```bash
 sudo dpkg -i filebeat-8.13.4-amd64.deb
 ```
 
-### 2.3 — Enable the System Logs Module
+### 2.3 Enable the System Logs Module
 
 The system module tells Filebeat to collect `auth.log` and `syslog` — the exact logs that capture SSH login attempts.
 
@@ -232,7 +238,7 @@ The system module tells Filebeat to collect `auth.log` and `syslog` — the exac
 sudo filebeat modules enable system
 ```
 
-### 2.4 — Set Up Filebeat (load index templates into Elasticsearch)
+### 2.4 Set Up Filebeat (load index templates into Elasticsearch)
 
 ```bash
 sudo filebeat setup -e
@@ -240,7 +246,7 @@ sudo filebeat setup -e
 
 > ⚠️ This may take a minute or two. It loads dashboards and index mappings into Elasticsearch and Kibana.
 
-### 2.5 — Start Filebeat
+### 2.5 Start Filebeat
 
 ```bash
 sudo systemctl enable filebeat
@@ -254,15 +260,17 @@ sudo systemctl status filebeat
 
 You should see `Active: active (running)`.
 
+![Filebeat running](images/filebeat.png)
+
 ---
 
-## Step 3 — Simulate an SSH Brute Force Attack (Kali Linux)
+## Step 3 Simulate an SSH Brute Force Attack (Kali Linux)
 
 Now we switch to our **Kali Linux** attacker machine and simulate a real-world attack — the kind a threat actor would run against an exposed SSH service.
 
 > 🔴 **Important:** Only perform this against machines you own or have explicit permission to test. This is a lab environment — both machines are yours.
 
-### 3.1 — Find Your Ubuntu VM's IP Address
+### 3.1 Find Your Ubuntu VM's IP Address
 
 On your **Ubuntu VM**, run:
 ```bash
@@ -271,7 +279,7 @@ ip a
 
 Note the IP address (e.g., `192.168.1.105`). You'll use this in the commands below.
 
-### 3.2 — Run a Brute Force Attack with Hydra
+### 3.2 Run a Brute Force Attack with Hydra
 
 On your **Kali Linux** machine, run:
 
@@ -289,7 +297,9 @@ What this does:
 
 > 💡 You don't need to let it finish. Let it run for 30–60 seconds to generate enough failed login events, then `CTRL + C` to stop it.
 
-### 3.3 — Simulate Manual Failed SSH Logins
+![Hydra brute force attack running](images/hydra.jpeg)
+
+### 3.3 Simulate Manual Failed SSH Logins
 
 Also try some manual failed SSH attempts — these generate clean, readable auth.log entries:
 
@@ -299,24 +309,26 @@ ssh fakeuser@<your-ubuntu-ip>
 
 Enter a wrong password a few times, then `CTRL + C`.
 
+![Manual failed SSH login attempt](images/ssh%20f.jpeg)
+
 ---
 
-## Step 4 — Detect & Visualize in Kibana
+## Step 4 Detect & Visualize in Kibana
 
-### 4.1 — Open Kibana
+### 4.1 Open Kibana
 
 In your browser on the Ubuntu VM:
 ```
 http://localhost:5601
 ```
 
-### 4.2 — Navigate to Discover
+### 4.2 Navigate to Discover
 
 1. Click the **hamburger menu** (☰) in the top-left
 2. Go to **Analytics → Discover**
 3. Select the `filebeat-*` index pattern from the data view dropdown
 
-### 4.3 — Search for Failed SSH Logins
+### 4.3 Search for Failed SSH Logins
 
 In the search bar, enter:
 
@@ -331,7 +343,9 @@ message: "Failed password"
 
 You should see a flood of log entries generated by Hydra — each one representing a failed SSH login attempt.
 
-### 4.4 — Key Fields to Examine
+![Failed SSH login events in Kibana Discover](images/auth.jpeg)
+
+### 4.4 Key Fields to Examine
 
 | Field | What It Shows |
 |---|---|
@@ -341,7 +355,7 @@ You should see a flood of log entries generated by Hydra — each one representi
 | `@timestamp` | When the event occurred |
 | `host.name` | The machine that received the attack |
 
-### 4.5 — View Pre-built Dashboards
+### 4.5 View Pre-built Dashboards
 
 Filebeat ships with ready-made dashboards:
 
@@ -350,6 +364,8 @@ Filebeat ships with ready-made dashboards:
 3. Open the **SSH login attempts** dashboard
 
 You'll see graphs showing login attempt frequency, source IPs, and failed vs. successful logins over time.
+
+![Kibana SSH login attempts dashboard](images/SSh%20alert.jpeg)
 
 ---
 
