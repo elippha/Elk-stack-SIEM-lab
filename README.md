@@ -389,12 +389,12 @@ By completing this project, you have demonstrated the following skills:
 
 Here are ways to extend this project further:
 
-- 🔔 **Set up Kibana Alerts** — Get notified when failed SSH logins exceed a threshold (e.g., 10 failures in 60 seconds)
-- 🗺️ **Add GeoIP enrichment** — Map attacker IPs to geographic locations on a world map dashboard
-- 🔒 **Enable Elasticsearch security** — Turn `xpack.security.enabled` back on and configure TLS + authentication
-- 📦 **Add Logstash** — Insert Logstash between Filebeat and Elasticsearch for log enrichment and transformation pipelines
-- 🖥️ **Ingest Windows logs** — Add a Windows VM and ship Windows Event Logs (Event ID 4625 = failed logon) into the same SIEM
-- 🚨 **Integrate Wazuh** — Replace or complement Filebeat with Wazuh for host-based intrusion detection (HIDS) and built-in detection rules
+- 🔔 **Set up Kibana Alerts** → Get notified when failed SSH logins exceed a threshold (e.g., 10 failures in 60 seconds)
+- 🗺️ **Add GeoIP enrichment** → Map attacker IPs to geographic locations on a world map dashboard
+- 🔒 **Enable Elasticsearch security** → Turn `xpack.security.enabled` back on and configure TLS + authentication
+- 📦 **Add Logstash** → Insert Logstash between Filebeat and Elasticsearch for log enrichment and transformation pipelines
+- 🖥️ **Ingest Windows logs** → Add a Windows VM and ship Windows Event Logs (Event ID 4625 = failed logon) into the same SIEM
+- 🚨 **Integrate Wazuh** → Replace or complement Filebeat with Wazuh for host-based intrusion detection (HIDS) and built-in detection rules
 
 ---
 
