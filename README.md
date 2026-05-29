@@ -9,10 +9,10 @@
 - [Overview](#overview)
 - [Architecture](#architecture)
 - [Prerequisites](#prerequisites)
-- [Step 1 — Deploy the ELK Stack with Docker](#step-1--deploy-the-elk-stack-with-docker)
-- [Step 2 — Install & Configure Filebeat](#step-2--install--configure-filebeat)
-- [Step 3 — Simulate an SSH Brute Force Attack (Kali Linux)](#step-3--simulate-an-ssh-brute-force-attack-kali-linux)
-- [Step 4 — Detect & Visualize in Kibana](#step-4--detect--visualize-in-kibana)
+- [Step 1 → Deploy the ELK Stack with Docker](#step-1--deploy-the-elk-stack-with-docker)
+- [Step 2 → Install & Configure Filebeat](#step-2--install--configure-filebeat)
+- [Step 3 → Simulate an SSH Brute Force Attack (Kali Linux)](#step-3--simulate-an-ssh-brute-force-attack-kali-linux)
+- [Step 4 → Detect & Visualize in Kibana](#step-4--detect--visualize-in-kibana)
 - [What You Learned](#what-you-learned)
 - [Next Steps](#next-steps)
 
@@ -59,8 +59,8 @@ We then attack the Ubuntu machine from **Kali Linux** using **Hydra** (SSH brute
 
 ## Prerequisites
 
-- **Ubuntu VM** (22.04 LTS recommended) — VirtualBox or VMware
-- **Kali Linux VM** (attacker machine) — on the same virtual network
+- **Ubuntu VM** (22.04 LTS recommended) → VirtualBox or VMware
+- **Kali Linux VM** (attacker machine) → on the same virtual network
 - Minimum **4GB RAM** allocated to Ubuntu VM (ELK is memory-hungry)
 - Both VMs should be able to **ping each other** (use Bridged or Host-Only adapter)
 
@@ -290,10 +290,10 @@ hydra -l testuser -P /usr/share/wordlists/rockyou.txt ssh://<your-ubuntu-ip> -t 
 Replace `<your-ubuntu-ip>` with the actual IP. 
 
 What this does:
-- `-l testuser` — tries the username `testuser`
-- `-P /usr/share/wordlists/rockyou.txt` — uses the infamous rockyou wordlist as passwords
-- `ssh://` — targets the SSH service
-- `-t 4` — runs 4 parallel threads
+- `-l testuser` → tries the username `testuser`
+- `-P /usr/share/wordlists/rockyou.txt` → uses the infamous rockyou wordlist as passwords
+- `ssh://` → targets the SSH service
+- `-t 4` → runs 4 parallel threads
 
 > 💡 You don't need to let it finish. Let it run for 30–60 seconds to generate enough failed login events, then `CTRL + C` to stop it.
 
